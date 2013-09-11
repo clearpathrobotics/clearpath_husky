@@ -5,10 +5,14 @@
     </node>
 
     <!-- Publish diagnostics information -->
-    <node pkg="husky_bringup" name="diagnostics" type="diagnostics.py"/>
+    <node pkg="husky_bringup" name="diagnostics" type="diagnostics.py" />
+
+	<!-- Diagnostic Aggregator -->
+	<node pkg="diagnostic_aggregator" type="aggregator_node" name="diag_agg">
+		<rosparam command="load" file="$(find husky_bringup)/config/diag_agg.yaml"/>
+	</node>
 
     <!-- Subscribe to encoders and optionally IMU -->
-    <node pkg="husky_bringup" name="dead_reckoning" type="dead_reckoning.py">
-        <param name="gyro_scale_correction" value="1.0" />
-    </node>
+    <node pkg="husky_bringup" name="dead_reckoning" type="dead_reckoning.py"/>
+
 </launch>
