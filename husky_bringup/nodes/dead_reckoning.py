@@ -7,7 +7,6 @@ import copy
 
 from math import sin,cos
 from geometry_msgs.msg import Quaternion
-from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from clearpath_base.msg import Encoders
 
@@ -50,9 +49,7 @@ class DeadReckoning(object):
         self.gyro_scale = rospy.get_param('~gyro_scale_correction',1.0)
 
         # Set up publishers/subscribers
-        self.pub_imu = rospy.Publisher('imu_data',Imu)
         self.pub_enc_odom = rospy.Publisher('encoder',Odometry);
-        rospy.Subscriber('imu/data', Imu, self.HandleIMU)
         rospy.Subscriber('husky/data/encoders', Encoders, self.HandleEncoder)
 
         # Initialize odometry message
@@ -68,15 +65,6 @@ class DeadReckoning(object):
         self.gyro_scale = config['gyro_scale_correction']
         return config
 
-    def HandleIMU(self,data):
-	# Correct IMU data
-	# Right now, gyro scale only
-	# TODO: Evaluate necessity of adding drift correction 
-        imu_corr = copy.deepcopy(data)
-        imu_corr.header.frame_id = "base_link"
-        imu_corr.angular_velocity.z = data.angular_velocity.z * self.gyro_scale
-        self.pub_imu.publish(imu_corr)
-   
     def HandleEncoder(self,data):
         # Initialize encoder state
         if not self.last_encoder:
